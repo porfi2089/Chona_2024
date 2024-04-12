@@ -7,7 +7,7 @@ import time # time es una libreria que viene con un monton de librerias que tien
 tablero_player1 = np.zeros([10, 10]) # creo una array de 10x10 llena solo de ceros
 tablero_player2 = tablero_player1.copy() # copiamos la primera array y la asignamos como el tablero de player 2
 Fore.WHITE, Back.BLACK # setear el color de las letras y del fondo a defalult
-
+os.system('cls') # limpia la consola
 # pide las posiciones de cada celda ocupada y las transforma en una array de np
 def ask_for_position(text, pos):
     ask_flag = True
@@ -35,20 +35,22 @@ def get_new_board():
     global tablero_player1 # se asegura de que la variable este definida dentro de la funcion
     global tablero_player2 # se asegura de que la variable este definida dentro de la funcion
     for i in range(2): # este for loop repite el codigo una vez por cada jugador
-        print("Player " + str(i+1)) # anunciamos que jugador debe completar los campos
+        print(f"{Fore.WHITE}{Back.BLACK}Player " + str(i+1)) # anunciamos que jugador debe completar los campos
         barcos = ask_for_position(f"Cantidad de celdas ocupadas por barcos \n -", 0) # pedimos la cantidad de celdas que van a ocupar los barcos
         values = np.ones((barcos)) # transformamos la cantidad de celdas en una lista de unos de ese largo
         posiciones = np.zeros((barcos, 2), dtype=np.uint32) # crea la lista de posciones de los barcos
         # pide cada picision de cada barco
         for b in range(barcos): 
             for c in range(2):
-                posiciones[b, c] = ask_for_position("Pase la posicion "+str(c)+" de la celda "+str(b)+": \n -", 1) # pide las cordenadas de cada celda ocupada
+                posiciones[b, c] = ask_for_position(f"Pase la posicion "+str(c)+" de la celda "+str(b)+": \n -", 1) # pide las cordenadas de cada celda ocupada
+            os.system('cls') # limpia la consola
         tablero = np.zeros([10, 10]) # se crea una tabla vacia
         asaign_values(tablero, values, posiciones) # asignamos valores para barcos TEST
         if i == 0:
             tablero_player1 = tablero.copy()
         else:
             tablero_player2 = tablero.copy()
+        os.system('cls') # limpia la consola
 
 def print_board(tablero):
     tablero = tablero.copy() # crea una copia del tablero
@@ -88,7 +90,7 @@ def game_loop():
         
         os.system('cls') # limpia la consola
         # si la celda atacada es igual a 1, se muestra HIT, si no se muestra MISS
-        if tablero_player2[atx, aty] == 1:
+        if tablero_player2[atx, aty] == 1 or tablero_player2[atx, aty] == 3:
             print(f"{Fore.GREEN}HIT{Fore.WHITE}")
             tablero_player2[atx, aty] = 3
         else:
@@ -97,7 +99,8 @@ def game_loop():
         print_board(tablero_player2) # muestra el nuevo tablero del jugador 2
 
         # revisar si a terminado el juego y dar el mensaje de FIN si es el caso
-        game_running = -check_if_game_ended(tablero_player2)
+        game_running = np.bitwise_not(check_if_game_ended(tablero_player2))
+        print(game_running)
         if not game_running:
             os.system('cls') # limpia la consola
             print("FIN DEL JUEGO \n A gandado el jugador 1")
@@ -125,24 +128,28 @@ def game_loop():
         print_board(tablero_player1)
 
         # revisar si a terminado el juego y dar el mensaje de FIN si es el caso
-        game_running = -check_if_game_ended(tablero_player1)
+        game_running = np.bitwise_not(check_if_game_ended(tablero_player1))
         if not game_running:
             os.system('cls') # limpia la consola
             print(f"{Back.WHITE}{Fore.GREEN}FIN DEL JUEGO \n A gandado el jugador 2 {Back.BLACK}{Fore.WHITE}")
             break
 
-        input("preciona enter cuando el jugador 2 tenga la computadora")
+        input("preciona enter cuando el jugador 2 tenga la computadora") # esperar a que se pase la computadora
 
 jugando = True
 while jugando: # main loop
-    get_new_board()
-    game_loop()
-    volver_a_jugar = input(f"\n {Back.WHITE}{Fore.BLUE}volver a jugar? \n {Back.WHITE}{Fore.GREEN}Y/{Fore.RED}N \n -").lower
+    get_new_board() # crea tableros nuevos y pide las posiciones a los jugadores
+    game_loop() # el juego en si
+    volver_a_jugar = input(f"\n {Fore.WHITE}{Back.BLACK}volver a jugar? \n {Back.WHITE}{Fore.GREEN}y/{Fore.RED}n \n -{Fore.WHITE}{Back.BLACK}")
+    Fore.WHITE, Back.BLACK # reestablece el color de letra y fondo
+    # revisa la respuesta del usuario y acciona acordemente
     if volver_a_jugar == "n":
         jugando = False
-        print("Chau :)")
+        print("Chau :)") # mensaje de salida
+        break
     elif volver_a_jugar == "y":
-        pass
+        pass # volver a jugar
     else:
-        print("no entendi que dijiste... \n voy a asumir que queres jugar de nuveo porque mi juego es buenisimo :)")
-        time.sleep(1000)
+        print(f"no entendi que dijiste... \n voy a asumir que queres jugar de nuveo porque mi juego es buenisimo :)")
+        time.sleep(1.5) # esperar para que se lea mensaje divertido
+    os.system('cls') # limpia la consola
