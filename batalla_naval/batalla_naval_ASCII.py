@@ -2,6 +2,7 @@ import numpy as np # importamos la libreria np que cuenta con una multitud de
 import os # os es una libreria que tiene muchas funciones que permiten interactuar con el sistema, en este caso la vamos a usar para la simple funcion de limpiar la consola
 from colorama import Fore, Back # colorama es una libreria de formateo de texto para la terminal, la vamos a usar para darle color a los mensajes
 import time # time es una libreria que viene con un monton de librerias que tienen que ver con el tiempo, nosotros la vamos a usar para esperar una determinada cantidad de tiempo en ciertos lugares 
+
 '''
     Este es un juego de batalla naval en el que dos jugadores se enfrentan en una batalla naval.
     Primero ambos jugadores se encargaran de poner sus barcos en el tablero, luego se turnaran para atacar al tablero del otro jugador.
@@ -23,7 +24,9 @@ import time # time es una libreria que viene con un monton de librerias que tien
     - https://github.com/porfi2089/Chona_2024
 
 '''
-tablero_player1 = np.zeros([10, 10]) # creo una array de 10x10 llena solo de ceros
+
+tamano_tablero = 20
+tablero_player1 = np.zeros([tamano_tablero, tamano_tablero]) # creo una array de 10x10 llena solo de ceros
 tablero_player2 = tablero_player1.copy() # copiamos la primera array y la asignamos como el tablero de player 2
 Fore.WHITE, Back.BLACK # setear el color de las letras y del fondo a defalult
 os.system('cls') # limpia la consola
@@ -40,31 +43,45 @@ def ask_for_position(text, pos):
             ask_flag = True # si la respuesta no es un numero entero, se repite el loop
             continue # se salta el resto del loop
 
-        if 1>inp>10 and pos == 1: # revisar si el valor esta dentro del tablero
+        if 1>inp>tamano_tablero and pos == 1: # revisar si el valor esta dentro del tablero
             ask_flag = True # si no esta dentro del tablero, se repite el loop
             print(f"{Fore.RED}Mala respuesta, numero debe estar entre 1 y 10{Fore.WHITE}")
     return inp
 
 # definimos una funcion que se va a encargar de asignar valores a una tabla dada en posiciones especificas
-def asaign_values(tabla, valores, posiciones):
-    for value, enum in zip(valores, range(len(valores))): # unimos los valores pasados y el indice de los valores 
-        tabla[posiciones[enum, 0], posiciones[enum, 1]] = value # se asigna el valor dado a la posicion en la tabla establecida
+def asaign_values(tabla, valores, posiciones, rotaciones, largo):
+    for value, enum in zip(valores, range(len(valores))): # unimos los valores pasados y el indice de los valores
+        if rotaciones[enum]%2 == 1 and posiciones[enum, 0] > 1:
+            x_off = 1
+            y_off = 0
+        else:
+            y_off = 1
+            x_off = 0
+        # se asigna el valor dado a la posicion en la tabla establecida
+        for i in range(largo):
+            i -= 1
+            tabla[posiciones[enum, 0] + i*x_off, posiciones[enum, 1] + i*y_off] = value
 
 def get_new_board():
     global tablero_player1 # se asegura de que la variable este definida dentro de la funcion
     global tablero_player2 # se asegura de que la variable este definida dentro de la funcion
-    barcos = ask_for_position(f"Cantidad de celdas ocupadas por barcos \n -", 0) # pedimos la cantidad de celdas que van a ocupar los barcos (igual para ambos jugadores)
+    barcos = ask_for_position(f"Cantidad de barcos \n -", 0) # pedimos la cantidad de celdas que van a ocupar los barcos (igual para ambos jugadores)
+    largo = 3
     for i in range(2): # este for loop repite el codigo una vez por cada jugador
         print(f"{Fore.WHITE}{Back.BLACK}Player " + str(i+1)) # anunciamos que jugador debe completar los campos
         values = np.ones((barcos)) # transformamos la cantidad de celdas en una lista de unos de ese largo
         posiciones = np.zeros((barcos, 2), dtype=np.uint32) # crea la lista de posciones de los barcos
+        rotaciones = np.zeros(barcos, dtype=np.uint32) # crea la lista de rotaciones de los barcos
+
         # pide cada picision de cada barco
         for b in range(barcos): 
             for c in range(2):
-                posiciones[b, c] = ask_for_position(f"Pase la posicion "+str(c)+" de la celda "+str(b)+": \n -", 1) # pide las cordenadas de cada celda ocupada
+                posiciones[b, c] = ask_for_position(f"Pase la posicion "+str(c)+" del barco "+str(b)+": \n -", 1) # pide las cordenadas de cada celda ocupada
+            rotaciones[b] = ask_for_position(f"Rotaciones del barco "+str(b)+": \n -", 0) # pide la cantidad de rotaciones que va a tener el barco
             os.system('cls') # limpia la consola
-        tablero = np.zeros([10, 10]) # se crea una tabla vacia
-        asaign_values(tablero, values, posiciones) # asignamos valores para barcos TEST
+        tablero = np.zeros([tamano_tablero, tamano_tablero]) # se crea una tabla vacia
+        asaign_values(tablero, values, posiciones, rotaciones, largo) # asignamos valores para barcos TEST
+        # aplica los cambios al tablero correspondiendo creando una copia de tablero que es el que seedita directamente y aplicandola al talbero correspondiente
         if i == 0:
             tablero_player1 = tablero.copy()
         else:
@@ -73,7 +90,7 @@ def get_new_board():
 
 def print_board(tablero):
     tablero = tablero.copy() # crea una copia del tablero
-    tablero = np.maximum(tablero - 1, np.zeros((10, 10))) # remplazamos al 1 por 0 para que no se muestre en el tablero
+    tablero = np.maximum(tablero - 1, np.zeros((tamano_tablero, tamano_tablero))) # remplazamos al 1 por 0 para que no se muestre en el tablero
     for i in enumerate(tablero): # itera por las filas de la tabla
         i = i[0] # nos aseguramos de solo tener el indice de la fila y no de las sub listas
         line = f"{Back.BLACK}{Fore.BLACK}-" # se crea una variable que va a almacernar la info de la lineay una barra negra
@@ -109,10 +126,12 @@ def game_loop():
         
         os.system('cls') # limpia la consola
         # si la celda atacada es igual a 1, se muestra HIT, si no se muestra MISS
-        if tablero_player2[atx, aty] == 1 or tablero_player2[atx, aty] == 3:
+        if tablero_player2[atx, aty] == 1:
             print(f"{Fore.GREEN}HIT{Fore.WHITE}")
-            tablero_player2[atx, aty] = 3 # se almacena el valor 3 en la celda atacada indicando que hay un barco
-        else:
+            tablero_player2[atx, aty] = 3  # se almacena el valor 3 en la celda atacada indicando que hay un barco
+        elif tablero_player2[atx, aty] == 3: # revisa si la celda ya fue golpeada y solia haber un barco
+            print(f"{Fore.GREEN}Already HIT{Fore.WHITE}")
+        else: # si no habia un barco
             print(f"{Fore.RED}MISS{Fore.WHITE}")
             tablero_player2[atx, aty] = 4 # se almacena el valor 4 en la celda atacada indicando que no hay barco
         print_board(tablero_player2) # muestra el nuevo tablero del jugador 2
@@ -140,7 +159,9 @@ def game_loop():
         if tablero_player1[atx, aty] == 1:
             print(f"{Fore.GREEN}HIT{Fore.WHITE}")
             tablero_player1[atx, aty] = 3 # se almacena el valor 3 en la celda atacada indicando que hay un barco
-        else:
+        elif tablero_player1[atx, aty] == 3: # revisa si la celda ya fue golpeada y solia haber un barco
+            print(f"{Fore.GREEN}Already HIT{Fore.WHITE}")
+        else: # si no habia un barco
             print(f"{Fore.RED}MISS{Fore.WHITE}")
             tablero_player1[atx, aty] = 4 # se almacena el valor 4 en la celda atacada indicando que no hay barco
         print_board(tablero_player1)
@@ -152,7 +173,7 @@ def game_loop():
             print(f"{Back.WHITE}{Fore.GREEN}FIN DEL JUEGO \n A gandado el jugador 2 {Back.BLACK}{Fore.WHITE}")
             break # termina el juego
 
-        input("preciona enter cuando el jugador 2 tenga la computadora") # esperar a que se pase la computadora
+        input("preciona enter cuando el jugador 1 tenga la computadora") # esperar a que se pase la computadora
 
 jugando = True
 while jugando: # main loop
