@@ -25,10 +25,51 @@ import time # time es una libreria que viene con un monton de librerias que tien
 
 '''
 
-tamano_tablero = 20
+tamano_tablero = 5 # tamaño del tablero
 tablero_player1 = np.zeros([tamano_tablero, tamano_tablero]) # creo una array de 10x10 llena solo de ceros
 tablero_player2 = tablero_player1.copy() # copiamos la primera array y la asignamos como el tablero de player 2
 barcos = 0 # variable que va a almacenar la cantidad de barcos que van a haber en el tablero
+frases_malvadas_epicas = [
+    "Prepárate para ser aniquilado por mi poderío naval!",
+    "Tu flota será reducida a polvo bajo mi implacable dominio!",
+    "Te hundiré hasta las profundidades más oscuras del abismo marino!",
+    "La destrucción yace en tu horizonte, como una tormenta imparable!",
+    "Tu derrota, inscrita en los anales de la historia naval, será inminente!",
+    "Seré la encarnación de tu peor pesadilla en los vastos océanos!",
+    "Tu naufragio será la sinfonía de mi triunfo supremo!",
+    "Ninguna embarcación escapará a la furia de mi estrategia sin piedad!",
+    "Mis cañones convertirán tus barcos en cenizas a la deriva!",
+    "El mar se tintará con la sangre de tu derrota, como un oscuro presagio!",
+    "Mis torpedos hallarán su blanco en el corazón mismo de tu armada!",
+    "Cada ola será un lamento por la inevitable pérdida que te espera!",
+    "Tu final se acerca con la solemnidad de un ocaso sin esperanza!",
+    "En el vasto abismo de los océanos, hallarás tu postrer descanso!",
+    "Tu flota, una vez orgullosa, se convertirá en un eco lejano en las profundidades!",
+    "Navegarás hacia tu perdición con la arrogancia de quien ignora su destino!",
+    "Los vientos de la fortuna soplan a mi favor, anunciando tu caída inevitable!",
+    "Mi navío es la guadaña que cortará tus esperanzas con implacable precisión!",
+    "Mis velas se hinchan con la fuerza de mil tormentas, mientras tu destino se sella!",
+    "Prepárate para ser aniquilado por mi poderío naval!",
+    "Tu flota será reducida a polvo bajo mi implacable dominio!",
+    "Te hundiré hasta las profundidades más oscuras del abismo marino!",
+    "La destrucción yace en tu horizonte, como una tormenta imparable!",
+    "Tu derrota, inscrita en los anales de la historia naval, será inminente!",
+    "Seré la encarnación de tu peor pesadilla en los vastos océanos!",
+    "Tu naufragio será la sinfonía de mi triunfo supremo!",
+    "Ninguna embarcación escapará a la furia de mi estrategia sin piedad!",
+    "Mis cañones convertirán tus barcos en cenizas a la deriva!",
+    "El mar se tintará con la sangre de tu derrota, como un oscuro presagio!",
+    "Mis torpedos hallarán su blanco en el corazón mismo de tu armada!",
+    "Cada ola será un lamento por la inevitable pérdida que te espera!",
+    "Tu final se acerca con la solemnidad de un ocaso sin esperanza!",
+    "En el vasto abismo de los océanos, hallarás tu postrer descanso!",
+    "Tu flota, una vez orgullosa, se convertirá en un eco lejano en las profundidades!",
+    "Navegarás hacia tu perdición con la arrogancia de quien ignora su destino!",
+    "Los vientos de la fortuna soplan a mi favor, anunciando tu caída inevitable!",
+    "Mi navío es la guadaña que cortará tus esperanzas con implacable precisión!",
+    "Mis velas se hinchan con la fuerza de mil tormentas, mientras tu destino se sella!",
+]
+
 Fore.WHITE, Back.BLACK # setear el color de las letras y del fondo a defalult
 os.system('cls') # limpia la consola
 
@@ -74,7 +115,7 @@ def asaign_values(tabla: np.ndarray, valores: np.ndarray, posiciones: np.ndarray
 
 def get_game_mode() -> bool: # pide el modo de juego
     '''pide el modo de juego y devuelve un booleano que indica si el juego es de dos jugadores o contra la computadora'''
-    print("Bienvenido a la batalla naval \n",  
+    print("Bienvenido a \n",  
         " _           _   _   _           _     _       \n",
         "| |         | | | | | |         | |   (_)      \n",
         "| |__   __ _| |_| |_| | ___  ___| |__  _ _ __  \n",
@@ -133,6 +174,8 @@ def get_new_board(single_player: bool): # pide las posiciones de los barcos a lo
             rotaciones[b] = np.random.randint(0, 4) # genera rotaciones aleatorias para los barcos
         tablero = np.zeros([tamano_tablero, tamano_tablero])
         asaign_values(tablero, values, posiciones, rotaciones, largo)
+        global computer # se asegura de que la variable este definida dentro de la funcion
+        computer = Computer(barcos, 3, tamano_tablero)
         tablero_player2 = tablero.copy()
 
 
@@ -161,9 +204,10 @@ def check_if_game_ended(tablero): # checkear si alguno de los jugadores a ganado
     else: # sino
         return True # el juego a terminado
 
-def check_cell(self,list, x, y, value):
+def check_cell(list, x, y, value):
         if list[x, y] == value:
             return True
+        return False
 
 def two_player_game_loop():
     game_running = True
@@ -228,37 +272,76 @@ def two_player_game_loop():
 
         input("preciona enter cuando el jugador 1 tenga la computadora") # esperar a que se pase la computadora
 
+class Computer: # clase que representa a la IA de la computadora (no me mates chona, ya se que es un if tree)
 
-class Computer: # clase que representa a la IA de la computadora
     def __init__(self, barcos: int, largo: int, tamano_tablero: int):
         self.tablero = np.zeros([tamano_tablero, tamano_tablero])
         self.atacadas = np.zeros([tamano_tablero, tamano_tablero])
-        self.barcosEncontrados = np.zeros([barcos, largo+2, 3]) # this list will contain the position of the ship and if it has been destroyed
+        self.barcoOrigen = np.zeros([barcos, 2, 2])
+        self.barcosDireccion = np.zeros([barcos])
+        self.posiblesDirecciones = np.zeros([4, 2])
         self.barcosNum = 0
         self._barcos = barcos
         self._largo = largo
         self._tamano_tablero = tamano_tablero
         self.mode = 1 # 1 = grid random, 2 = idntify, 3 = destroy
+
     def atacar(self):
         if self.mode == 1:
-            atx, aty = np.random.randint(0, int(self._tamano_tablero/2))*2, np.random.randint(0, int(self._tamano_tablero/2))*2 # busca en todos los numeros pares
+            atx = np.random.randint(0, self._tamano_tablero)
+            aty = np.random.randint(0, int(self._tamano_tablero/2))*2 + atx%2
             while self.atacadas[atx, aty] == 1:
                 atx, aty = np.random.randint(0, int(self._tamano_tablero/2))*2, np.random.randint(0, int(self._tamano_tablero/2))*2 # busca en todos los numeros pares
-
             self.atacadas[atx, aty] = 1
             if tablero_player1[atx, aty] == 1:
-                self.barcosEncontrados[self.barcosNum, 2] = True, atx, aty
-                self.barcosNum += 1
+                self.barcoOrigen[self.barcosNum, 0] = [atx, aty]
+                self.barcoOrigen[self.barcosNum, 1] = [atx, aty]
+                self.mode = 2
             return atx, aty
-        elif self.mode == 2:
-            b = self.barcosEncontrados[self.barcosNum-1]
-            p = b[2:self._largo+2]
+        
+        if self.mode == 2:
+            atx, aty = self.barcoOrigen[self.barcosNum, 0]
+            self.posiblesDirecciones = np.array([[atx, aty+1],
+                                                [atx, aty-1],
+                                                [atx+1, aty],
+                                                [atx-1, aty]], dtype=int)
+            print(self.posiblesDirecciones)
+            print(self.posiblesDirecciones.shape)
+            print(self.posiblesDirecciones[0])
+            print(self.posiblesDirecciones[3, 0])
+            for i in range(len(self.posiblesDirecciones)-1, -1, -1):
+                if self.posiblesDirecciones[i, 0] < 0 or self.posiblesDirecciones[i, 0] >= self._tamano_tablero or self.posiblesDirecciones[i, 1] < 0 or self.posiblesDirecciones[i, 1] >= self._tamano_tablero:
+                    self.posiblesDirecciones = np.delete(self.posiblesDirecciones, i, 0)
 
-                
-                    
-            
-    
-
+            deadEnd = True
+            for i in self.posiblesDirecciones:
+                if check_cell(self.atacadas, i[0], i[1], 0):
+                    atx, aty = i
+                    deadEnd = False
+                    break
+            if deadEnd:
+                atx, aty = self.barcoOrigen[self.barcosNum, 1]
+                self.posiblesDirecciones = np.array([[atx, aty+1],
+                                                    [atx, aty-1],
+                                                    [atx+1, aty],
+                                                    [atx-1, aty]])
+                deadEnd = True
+                for i in self.posiblesDirecciones:
+                    if check_cell(self.atacadas, i[0], i[1], 0):
+                        atx, aty = i
+                        deadEnd = False
+                        break
+                if deadEnd:
+                    self.mode = 1
+                    self.barcosNum += 1
+                    atx, aty = self.atacar()
+                else:
+                    self.barcoOrigen[self.barcosNum, 0] = [atx, aty]
+            self.atacadas[atx, aty] = 1
+            if tablero_player1[atx, aty] == 1:
+                self.barcoOrigen[self.barcosNum, 0] = [atx, aty]
+            return atx, aty
+        
 def single_player_game_loop():
     game_running = True
     while game_running: # loop principal del juego
@@ -290,17 +373,38 @@ def single_player_game_loop():
             print("FIN DEL JUEGO \n A gandado el jugador 1")
             break # termina el juego
 
-        input("preciona enter cuando el jugador 2 tenga la computadora") # esperar al cambio de jugadores
-
+        input("preciona enter para que siga la computadora") # esperar al cambio de jugadores
+        os.system('cls') # limpia la consola
         # COMPUTADORA
         os.system('cls') # limpia la consola
         print("Computadora") # anuncia el turno del jugador 1
         print_board(tablero_player1) # muestra el tablero del jugador 2
         print("Va a atacar")
+        print("                  _______")
+        print("               _/       \\_")
+        print("              / |       | \\    ")
+        print("             /  |__   __|  \\   ...")
+        print("            |__/((o| |o))\\__|   ")
+        print("            |      | |      |")
+        print("            |\\     |_|     /|")
+        print("            | \\           / |")
+        print("             \\| /  ___  \\ |/")
+        print("              \\ | / _ \\ | /")
+        print("               \\_________/")
+        print("                _|_____|_")
+        print("           ____|_________|____")
+        print("          /                   \\")
+        print("         /                     \\")
+        print("        /         battle        \\")
+        print("        |          robot        |\n\n")
+        print("        |   _________________   |")
+        print(frases_malvadas_epicas[np.random.randint(0, len(frases_malvadas_epicas))], "\n \n") # 
 
+        time.sleep(1) # espera un segundo para que el jugador pueda ver el ataque
         # pide las dos pocisiones de ataque
-        atx, aty = ask_for_position("Pase la posicion x de la celda: \n -", 1), ask_for_position("Pase la posicion y de la celda: \n -", 1) 
-        
+        atx, aty = computer.atacar()
+        print(f"Vot a atacar a {atx}, {aty}!!")
+        time.sleep(2) # espera un segundo para que el jugador pueda ver el ataque
         os.system('cls') # limpia la consola
         # si la celda atacada es igual a 1, se muestra HIT, si no se muestra MISS
         if tablero_player1[atx, aty] == 1:
@@ -317,10 +421,10 @@ def single_player_game_loop():
         game_running = np.bitwise_not(check_if_game_ended(tablero_player1))
         if not game_running:
             os.system('cls') # limpia la consola
-            print(f"{Back.WHITE}{Fore.GREEN}FIN DEL JUEGO \n A gandado el jugador 2 {Back.BLACK}{Fore.WHITE}")
+            print(f"{Back.WHITE}{Fore.GREEN}FIN DEL JUEGO \n A gandado la computadora {Back.BLACK}{Fore.WHITE}")
             break # termina el juego
 
-        input("preciona enter cuando el jugador 1 tenga la computadora") # esperar a que se pase la computadora
+        input("preciona enter para seguir") # esperar a que se pase la computadora
 
 jugando = True
 while jugando: # main loop
@@ -337,7 +441,15 @@ while jugando: # main loop
     # revisa la respuesta del usuario y acciona acordemente
     if volver_a_jugar == "n":
         jugando = False # termina el juego
-        print("Chau :)") # mensaje de salida
+        print("Chau :)\n",  
+        " _           _   _   _           _     _       \n",
+        "| |         | | | | | |         | |   (_)      \n",
+        "| |__   __ _| |_| |_| | ___  ___| |__  _ _ __  \n",
+        "| '_ \ / _` | __| __| |/ _ \/ __| '_ \| | '_ \ \n",
+        "| |_) | (_| | |_| |_| |  __/\__ \ | | | | |_) | \n",
+        "|_.__/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/ \n", 
+        "                                       | |    \n "
+        "                                       |_|    \n ") # mensaje de salida
         break
     elif volver_a_jugar == "y":
         pass # volver a jugar
