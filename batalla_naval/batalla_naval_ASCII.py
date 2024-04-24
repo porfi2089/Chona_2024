@@ -56,6 +56,10 @@ frases_malvadas_epicas = [
     "Tu derrota, inscrita en los anales de la historia naval, será inminente!",
     "Seré la encarnación de tu peor pesadilla en los vastos océanos!",
     "Tu naufragio será la sinfonía de mi triunfo supremo!",
+    "te voy a hundir como el titanic",
+    "Te hare lo mismo que blender a las nets de ORT... \n ¡¡¡¡¡arderas!!!!!!",
+    "Te voy a hacer lo mismo que el 2020 a la humanidad",
+    "Te voy a hacer lo mismo que visual studio le hace a relpit \n te destruire!!!!!!",
     "Ninguna embarcación escapará a la furia de mi estrategia sin piedad!",
     "Mis cañones convertirán tus barcos en cenizas a la deriva!",
     "El mar se tintará con la sangre de tu derrota, como un oscuro presagio!",
@@ -75,7 +79,8 @@ os.system('cls') # limpia la consola
 
 
 # pide las posiciones de cada celda ocupada y las transforma en una array de np
-def ask_for_position(text, pos):
+def ask_for_position(text: str, pos: int) -> int:
+    '''pide y devuelve un numero entero'''	
     ask_flag = True # se crea una variable que va a ser la condicion de un while loop
     while ask_flag: # loop que se repite hasta que se de una respuesta valida
         inp = input(text) # pide la respuesta al usuario
@@ -86,10 +91,10 @@ def ask_for_position(text, pos):
             print(f"{Fore.RED}Mala respuesta, responder solo numeros enteros{Fore.WHITE}")
             ask_flag = True # si la respuesta no es un numero entero, se repite el loop
             continue # se salta el resto del loop
-
-        if 1>inp>tamano_tablero and pos == 1: # revisar si el valor esta dentro del tablero
-            ask_flag = True # si no esta dentro del tablero, se repite el loop
-            print(f"{Fore.RED}Mala respuesta, numero debe estar entre 1 y 10{Fore.WHITE}")
+        if pos == 1:
+            if 0 > inp or inp > tamano_tablero-1: # revisar si el valor esta dentro del tablero
+                ask_flag = True # si no esta dentro del tablero, se repite el loop
+                print(f"{Fore.RED}Mala respuesta, numero debe estar entre 1 y {tamano_tablero}{Fore.WHITE}")
     return inp
 
 
@@ -100,13 +105,13 @@ def asaign_values(tabla: np.ndarray, valores: np.ndarray, posiciones: np.ndarray
         x_off = rotaciones[enum] % 2 # se calcula el offset en x
         y_off = (rotaciones[enum] + 1) % 2 # se calcula el offset en y
         # se asigna el valor dado a la posicion en la tabla establecida
-        for i in range(largo):
+        for i in range(largo): # crea un segmento del largo deseado, revisando si este va a colsionar con una pared y moviendolo acordemente
             i -= 1
-            if posiciones[enum, 0] + i*x_off > tamano_tablero:
+            if posiciones[enum, 0] + i*x_off > tamano_tablero-1:
                 i -= largo
             elif posiciones[enum, 0] + i*x_off < 0:
                 i += largo
-            if posiciones[enum, 1] + i*y_off > tamano_tablero:
+            if posiciones[enum, 1] + i*y_off > tamano_tablero-1:
                 i -= largo
             elif posiciones[enum, 1] + i*y_off < 0:
                 i += largo
@@ -124,16 +129,18 @@ def get_game_mode() -> bool: # pide el modo de juego
         "|_.__/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/ \n", 
         "                                       | |    \n"
         "                                       |_|    \n") # mensaje de bienvenida
-    print(f"{Fore.WHITE}{Back.BLACK}Modo de juego \n {Fore.GREEN}1{Fore.WHITE}: Jugador vs Jugador \n {Fore.RED}2{Fore.WHITE}: Jugador vs Computadora \n -{Fore.WHITE}{Back.BLACK}")
-    game_mode = input()
+    # menu de seleccion de modo de juego
+    print(f"{Fore.WHITE}{Back.BLACK}Modo de juego \n {Fore.GREEN}1{Fore.WHITE}: Jugador vs Jugador \n {Fore.RED}2{Fore.WHITE}: Jugador vs Computadora \n -{Fore.WHITE}{Back.BLACK}") 
+    game_mode = input() # pide la respuesta al usuario
     if game_mode == "1":
         return True
     elif game_mode == "2":
         return False
     else:
         print(f"{Fore.RED}Respuesta invalida{Fore.WHITE}")
-        get_game_mode()
+        time.sleep(1) # espera un segundo para que el jugador pueda leer el mensaje
         os.system('cls') # limpia la consola
+        get_game_mode()
 
 
 def get_new_board(single_player: bool): # pide las posiciones de los barcos a los jugadores y los asigna a los tableros
