@@ -28,8 +28,11 @@ import time # time es una libreria que viene con un monton de librerias que tien
 tamano_tablero = 20
 tablero_player1 = np.zeros([tamano_tablero, tamano_tablero]) # creo una array de 10x10 llena solo de ceros
 tablero_player2 = tablero_player1.copy() # copiamos la primera array y la asignamos como el tablero de player 2
+barcos = 0 # variable que va a almacenar la cantidad de barcos que van a haber en el tablero
 Fore.WHITE, Back.BLACK # setear el color de las letras y del fondo a defalult
 os.system('cls') # limpia la consola
+
+
 # pide las posiciones de cada celda ocupada y las transforma en una array de np
 def ask_for_position(text, pos):
     ask_flag = True # se crea una variable que va a ser la condicion de un while loop
@@ -48,27 +51,60 @@ def ask_for_position(text, pos):
             print(f"{Fore.RED}Mala respuesta, numero debe estar entre 1 y 10{Fore.WHITE}")
     return inp
 
+
 # definimos una funcion que se va a encargar de asignar valores a una tabla dada en posiciones especificas
-def asaign_values(tabla, valores, posiciones, rotaciones, largo):
+def asaign_values(tabla: np.ndarray, valores: np.ndarray, posiciones: np.ndarray, rotaciones: int, largo: int):
+    '''asigna valores a una tabla en posiciones especificas'''
     for value, enum in zip(valores, range(len(valores))): # unimos los valores pasados y el indice de los valores
-        if rotaciones[enum]%2 == 1 and posiciones[enum, 0] > 1:
-            x_off = 1
-            y_off = 0
-        else:
-            y_off = 1
-            x_off = 0
+        x_off = rotaciones[enum] % 2 # se calcula el offset en x
+        y_off = (rotaciones[enum] + 1) % 2 # se calcula el offset en y
         # se asigna el valor dado a la posicion en la tabla establecida
         for i in range(largo):
             i -= 1
+            if posiciones[enum, 0] + i*x_off > tamano_tablero:
+                i -= largo
+            elif posiciones[enum, 0] + i*x_off < 0:
+                i += largo
+            if posiciones[enum, 1] + i*y_off > tamano_tablero:
+                i -= largo
+            elif posiciones[enum, 1] + i*y_off < 0:
+                i += largo
             tabla[posiciones[enum, 0] + i*x_off, posiciones[enum, 1] + i*y_off] = value
 
-def get_new_board():
+
+def get_game_mode() -> bool: # pide el modo de juego
+    '''pide el modo de juego y devuelve un booleano que indica si el juego es de dos jugadores o contra la computadora'''
+    print("Bienvenido a la batalla naval \n",  
+        " _           _   _   _           _     _       \n",
+        "| |         | | | | | |         | |   (_)      \n",
+        "| |__   __ _| |_| |_| | ___  ___| |__  _ _ __  \n",
+        "| '_ \ / _` | __| __| |/ _ \/ __| '_ \| | '_ \ \n",
+        "| |_) | (_| | |_| |_| |  __/\__ \ | | | | |_) | \n",
+        "|_.__/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/ \n", 
+        "                                       | |    \n"
+        "                                       |_|    \n") # mensaje de bienvenida
+    print(f"{Fore.WHITE}{Back.BLACK}Modo de juego \n {Fore.GREEN}1{Fore.WHITE}: Jugador vs Jugador \n {Fore.RED}2{Fore.WHITE}: Jugador vs Computadora \n -{Fore.WHITE}{Back.BLACK}")
+    game_mode = input()
+    if game_mode == "1":
+        return True
+    elif game_mode == "2":
+        return False
+    else:
+        print(f"{Fore.RED}Respuesta invalida{Fore.WHITE}")
+        get_game_mode()
+        os.system('cls') # limpia la consola
+
+
+def get_new_board(single_player: bool): # pide las posiciones de los barcos a los jugadores y los asigna a los tableros
+    '''pide las posiciones de los barcos a los jugadores y los asigna a los tableros'''
     global tablero_player1 # se asegura de que la variable este definida dentro de la funcion
     global tablero_player2 # se asegura de que la variable este definida dentro de la funcion
+    global barcos # se asegura de que la variable este definida dentro de la funcion
     barcos = ask_for_position(f"Cantidad de barcos \n -", 0) # pedimos la cantidad de celdas que van a ocupar los barcos (igual para ambos jugadores)
     largo = 3
-    for i in range(2): # este for loop repite el codigo una vez por cada jugador
+    for i in range(1 + np.bitwise_not(single_player)): # este for loop repite el codigo una vez por cada jugador
         print(f"{Fore.WHITE}{Back.BLACK}Player " + str(i+1)) # anunciamos que jugador debe completar los campos
+
         values = np.ones((barcos)) # transformamos la cantidad de celdas en una lista de unos de ese largo
         posiciones = np.zeros((barcos, 2), dtype=np.uint32) # crea la lista de posciones de los barcos
         rotaciones = np.zeros(barcos, dtype=np.uint32) # crea la lista de rotaciones de los barcos
@@ -79,14 +115,26 @@ def get_new_board():
                 posiciones[b, c] = ask_for_position(f"Pase la posicion "+str(c)+" del barco "+str(b)+": \n -", 1) # pide las cordenadas de cada celda ocupada
             rotaciones[b] = ask_for_position(f"Rotaciones del barco "+str(b)+": \n -", 0) # pide la cantidad de rotaciones que va a tener el barco
             os.system('cls') # limpia la consola
+
         tablero = np.zeros([tamano_tablero, tamano_tablero]) # se crea una tabla vacia
         asaign_values(tablero, values, posiciones, rotaciones, largo) # asignamos valores para barcos TEST
+        
         # aplica los cambios al tablero correspondiendo creando una copia de tablero que es el que seedita directamente y aplicandola al talbero correspondiente
         if i == 0:
             tablero_player1 = tablero.copy()
         else:
             tablero_player2 = tablero.copy()
         os.system('cls') # limpia la consola
+
+    if single_player: # crea un tablero para la computadora
+        for b in range(barcos):
+            for c in range(2):
+                posiciones[b, c] = np.random.randint(0, tamano_tablero) # genera posiciones aleatorias para los barcos
+            rotaciones[b] = np.random.randint(0, 4) # genera rotaciones aleatorias para los barcos
+        tablero = np.zeros([tamano_tablero, tamano_tablero])
+        asaign_values(tablero, values, posiciones, rotaciones, largo)
+        tablero_player2 = tablero.copy()
+
 
 def print_board(tablero):
     tablero = tablero.copy() # crea una copia del tablero
@@ -105,14 +153,19 @@ def print_board(tablero):
                 n = f"{Fore.BLUE}{Back.BLUE}0-"
             line = line + n # se añade la celda a la linea
         print(line+f"{Back.BLACK}{Fore.WHITE}") # se imprime la linea 
-            
+
+
 def check_if_game_ended(tablero): # checkear si alguno de los jugadores a ganado
     if 1 in tablero: # si sigue habiendo barcos en el tablero
         return False # el juego sige
     else: # sino
         return True # el juego a terminado
 
-def game_loop():
+def check_cell(self,list, x, y, value):
+        if list[x, y] == value:
+            return True
+
+def two_player_game_loop():
     game_running = True
     while game_running: # loop principal del juego
         # JUGADOR 1
@@ -175,10 +228,110 @@ def game_loop():
 
         input("preciona enter cuando el jugador 1 tenga la computadora") # esperar a que se pase la computadora
 
+
+class Computer: # clase que representa a la IA de la computadora
+    def __init__(self, barcos: int, largo: int, tamano_tablero: int):
+        self.tablero = np.zeros([tamano_tablero, tamano_tablero])
+        self.atacadas = np.zeros([tamano_tablero, tamano_tablero])
+        self.barcosEncontrados = np.zeros([barcos, largo+2, 3]) # this list will contain the position of the ship and if it has been destroyed
+        self.barcosNum = 0
+        self._barcos = barcos
+        self._largo = largo
+        self._tamano_tablero = tamano_tablero
+        self.mode = 1 # 1 = grid random, 2 = idntify, 3 = destroy
+    def atacar(self):
+        if self.mode == 1:
+            atx, aty = np.random.randint(0, int(self._tamano_tablero/2))*2, np.random.randint(0, int(self._tamano_tablero/2))*2 # busca en todos los numeros pares
+            while self.atacadas[atx, aty] == 1:
+                atx, aty = np.random.randint(0, int(self._tamano_tablero/2))*2, np.random.randint(0, int(self._tamano_tablero/2))*2 # busca en todos los numeros pares
+
+            self.atacadas[atx, aty] = 1
+            if tablero_player1[atx, aty] == 1:
+                self.barcosEncontrados[self.barcosNum, 2] = True, atx, aty
+                self.barcosNum += 1
+            return atx, aty
+        elif self.mode == 2:
+            b = self.barcosEncontrados[self.barcosNum-1]
+            p = b[2:self._largo+2]
+
+                
+                    
+            
+    
+
+def single_player_game_loop():
+    game_running = True
+    while game_running: # loop principal del juego
+        # JUGADOR 1
+        os.system('cls') # limpia la consola
+        print("player 1") # anuncia el turno del jugador 1
+        print_board(tablero_player2) # muestra el tablero del jugador 2
+        print("Su truno de atacar")
+
+        # pide las dos pocisiones de ataque
+        atx, aty = ask_for_position("Pase la posicion x de la celda: \n -", 1), ask_for_position("Pase la posicion y de la celda: \n -", 1) 
+        
+        os.system('cls') # limpia la consola
+        # si la celda atacada es igual a 1, se muestra HIT, si no se muestra MISS
+        if tablero_player2[atx, aty] == 1:
+            print(f"{Fore.GREEN}HIT{Fore.WHITE}")
+            tablero_player2[atx, aty] = 3  # se almacena el valor 3 en la celda atacada indicando que hay un barco
+        elif tablero_player2[atx, aty] == 3: # revisa si la celda ya fue golpeada y solia haber un barco
+            print(f"{Fore.GREEN}Already HIT{Fore.WHITE}")
+        else: # si no habia un barco
+            print(f"{Fore.RED}MISS{Fore.WHITE}")
+            tablero_player2[atx, aty] = 4 # se almacena el valor 4 en la celda atacada indicando que no hay barco
+        print_board(tablero_player2) # muestra el nuevo tablero del jugador 2
+
+        # revisar si a terminado el juego y dar el mensaje de FIN si es el caso
+        game_running = np.bitwise_not(check_if_game_ended(tablero_player2))
+        if not game_running:
+            os.system('cls') # limpia la consola
+            print("FIN DEL JUEGO \n A gandado el jugador 1")
+            break # termina el juego
+
+        input("preciona enter cuando el jugador 2 tenga la computadora") # esperar al cambio de jugadores
+
+        # COMPUTADORA
+        os.system('cls') # limpia la consola
+        print("Computadora") # anuncia el turno del jugador 1
+        print_board(tablero_player1) # muestra el tablero del jugador 2
+        print("Va a atacar")
+
+        # pide las dos pocisiones de ataque
+        atx, aty = ask_for_position("Pase la posicion x de la celda: \n -", 1), ask_for_position("Pase la posicion y de la celda: \n -", 1) 
+        
+        os.system('cls') # limpia la consola
+        # si la celda atacada es igual a 1, se muestra HIT, si no se muestra MISS
+        if tablero_player1[atx, aty] == 1:
+            print(f"{Fore.GREEN}HIT{Fore.WHITE}")
+            tablero_player1[atx, aty] = 3 # se almacena el valor 3 en la celda atacada indicando que hay un barco
+        elif tablero_player1[atx, aty] == 3: # revisa si la celda ya fue golpeada y solia haber un barco
+            print(f"{Fore.GREEN}Already HIT{Fore.WHITE}")
+        else: # si no habia un barco
+            print(f"{Fore.RED}MISS{Fore.WHITE}")
+            tablero_player1[atx, aty] = 4 # se almacena el valor 4 en la celda atacada indicando que no hay barco
+        print_board(tablero_player1)
+
+        # revisar si a terminado el juego y dar el mensaje de FIN si es el caso
+        game_running = np.bitwise_not(check_if_game_ended(tablero_player1))
+        if not game_running:
+            os.system('cls') # limpia la consola
+            print(f"{Back.WHITE}{Fore.GREEN}FIN DEL JUEGO \n A gandado el jugador 2 {Back.BLACK}{Fore.WHITE}")
+            break # termina el juego
+
+        input("preciona enter cuando el jugador 1 tenga la computadora") # esperar a que se pase la computadora
+
 jugando = True
 while jugando: # main loop
-    get_new_board() # crea tableros nuevos y pide las posiciones a los jugadores
-    game_loop() # el juego en si
+    game_mode = get_game_mode() # pide el modo de juego
+    get_new_board(np.bitwise_not(game_mode)) # crea tableros nuevos y pide las posiciones a los jugadores
+
+    if game_mode: # empieza el juego en el modo seleccionado
+        two_player_game_loop()
+    else:
+        single_player_game_loop()
+
     volver_a_jugar = input(f"\n {Fore.WHITE}{Back.BLACK}volver a jugar? \n {Back.WHITE}{Fore.GREEN}y/{Fore.RED}n \n -{Fore.WHITE}{Back.BLACK}")
     Fore.WHITE, Back.BLACK # reestablece el color de letra y fondo
     # revisa la respuesta del usuario y acciona acordemente
