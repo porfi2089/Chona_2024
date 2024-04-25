@@ -15,8 +15,10 @@ import time # time es una libreria que viene con un monton de librerias que tien
     El tablero sera mostrado al jugador mediante una representacion ASCII en la consola.
 
     Aclaraciones:
-    - El tablero es de 10x10
-    - Los barcos ocupan una sola celda
+    - El tablero es customizable
+    - Soporta barcos de cualquier tamaño, pero por arriba de 3 de largo estas a tu propio riesgo
+    - La IA es vencible
+
 
     Juego por: Manuel Rao, Joaquin Blanco, Tobias Esteban Majic.
 
@@ -154,6 +156,27 @@ def get_game_mode() -> bool: # pide el modo de juego
         os.system('cls') # limpia la consola
         get_game_mode()
 
+def print_board(tablero: np.ndarray[np.ndarray[int]], mode: int = 0) -> None:
+    '''imprime el tablero dado en la consola con un formateado a color'''
+
+    tablero = tablero.copy() # crea una copia del tablero
+    tablero = np.maximum(tablero - 1, np.zeros((tamano_tablero, tamano_tablero))) # remplazamos al 1 por 0 para que no se muestre en el tablero
+    for i in enumerate(tablero): # itera por las filas de la tabla
+        i = i[0] # nos aseguramos de solo tener el indice de la fila y no de las sub listas
+        line = f"{Back.BLACK}{Fore.BLACK}-" # se crea una variable que va a almacernar la info de la lineay una barra negra
+        for o in enumerate(tablero[i]): # itera por las columnas de la tabla
+            n = ""
+            o = o[0]
+            if tablero[i, o] == 2: # si la celda es igual a 2, se le asigna el color rojo
+                n = f"{Fore.RED}{Back.RED}2-"
+            if tablero[i, o] == 3: # si la celda es igual a 3, se le asigna el color verde
+                n = f"{Fore.WHITE}{Back.WHITE}3-"
+            if tablero[i, o] == 0: # si la celda es igual a 0, se le asigna el color azul
+                n = f"{Fore.BLUE}{Back.BLUE}0-"
+            if tablero[i, o] == 1 and mode == 1: # si la celda es igual a 0, se le asigna el color azul
+                n = f"{Fore.RED}{Back.RED}1-" 
+            line = line + n # se añade la celda a la linea
+        print(line+f"{Back.BLACK}{Fore.WHITE}") # se imprime la linea 
 
 def get_new_board(single_player: bool) -> None: # pide las posiciones de los barcos a los jugadores y los asigna a los tableros
     '''pide las posiciones de los barcos a los jugadores y los asigna a los tableros'''
@@ -165,13 +188,15 @@ def get_new_board(single_player: bool) -> None: # pide las posiciones de los bar
     largo = 3
     for i in range(1 + np.bitwise_not(single_player)): # este for loop repite el codigo una vez por cada jugador
         print(f"{Fore.WHITE}{Back.BLACK}Player " + str(i+1)) # anunciamos que jugador debe completar los campos
-
         values = np.ones((barcos)) # transformamos la cantidad de celdas en una lista de unos de ese largo
         posiciones = np.zeros((barcos, 2), dtype=np.uint32) # crea la lista de posciones de los barcos
         rotaciones = np.zeros(barcos, dtype=np.uint32) # crea la lista de rotaciones de los barcos
 
         # pide cada picision de cada barco
         for b in range(barcos): 
+            tablero = np.zeros([tamano_tablero, tamano_tablero]) # se crea una tabla vacia
+            asaign_values(tablero, values, posiciones, rotaciones, largo) # asignamos valores para barcos 
+            print_board(tablero, mode=1) # muestra el tablero para mostrar poscicion actual de los barcos
             for c in range(2):
                 posiciones[b, c] = ask_for_position(f"Pase la posicion "+str(c)+" del barco "+str(b)+": \n -", 1) # pide las cordenadas de cada celda ocupada
             rotaciones[b] = ask_for_position(f"Rotaciones del barco "+str(b)+": \n -", 0) # pide la cantidad de rotaciones que va a tener el barco
@@ -179,6 +204,8 @@ def get_new_board(single_player: bool) -> None: # pide las posiciones de los bar
 
         tablero = np.zeros([tamano_tablero, tamano_tablero]) # se crea una tabla vacia
         asaign_values(tablero, values, posiciones, rotaciones, largo) # asignamos valores para barcos TEST
+        print_board(tablero, mode=1)
+        time.sleep(1)
         
         # aplica los cambios al tablero correspondiendo creando una copia de tablero que es el que seedita directamente y aplicandola al talbero correspondiente
         if i == 0:
@@ -197,27 +224,6 @@ def get_new_board(single_player: bool) -> None: # pide las posiciones de los bar
         global computer # se asegura de que la variable este definida dentro de la funcion
         computer = Computer(barcos, 3, tamano_tablero)
         tablero_player2 = tablero.copy()
-
-
-def print_board(tablero: np.ndarray[np.ndarray[int]]) -> None:
-    '''imprime el tablero dado en la consola con un formateado a color'''
-
-    tablero = tablero.copy() # crea una copia del tablero
-    tablero = np.maximum(tablero - 1, np.zeros((tamano_tablero, tamano_tablero))) # remplazamos al 1 por 0 para que no se muestre en el tablero
-    for i in enumerate(tablero): # itera por las filas de la tabla
-        i = i[0] # nos aseguramos de solo tener el indice de la fila y no de las sub listas
-        line = f"{Back.BLACK}{Fore.BLACK}-" # se crea una variable que va a almacernar la info de la lineay una barra negra
-        for o in enumerate(tablero[i]): # itera por las columnas de la tabla
-            n = ""
-            o = o[0]
-            if tablero[i, o] == 2: # si la celda es igual a 2, se le asigna el color rojo
-                n = f"{Fore.RED}{Back.RED}2-"
-            if tablero[i, o] == 3: # si la celda es igual a 3, se le asigna el color verde
-                n = f"{Fore.WHITE}{Back.WHITE}3-"
-            if tablero[i, o] == 0: # si la celda es igual a 0, se le asigna el color azul
-                n = f"{Fore.BLUE}{Back.BLUE}0-"
-            line = line + n # se añade la celda a la linea
-        print(line+f"{Back.BLACK}{Fore.WHITE}") # se imprime la linea 
 
 
 def check_if_game_ended(tablero: np.ndarray[np.ndarray[int]]) -> bool: # checkear si alguno de los jugadores a ganado
@@ -322,16 +328,21 @@ class Computer: # clase que representa a la IA de la computadora (no me mates ch
 
         if self.mode == 1:
             atx = np.random.randint(0, self._tamano_tablero)
-            aty = np.random.randint(0, int(self._tamano_tablero/2))*2 + atx%2
+            if self._largo > 1:
+                aty = np.random.randint(0, int(self._tamano_tablero/2))*2 + atx%2
+            else:
+                aty = np.random.randint(0, self._tamano_tablero)
+            
             while self.atacadas[atx, aty] == 1:
                 atx, aty = np.random.randint(0, int(self._tamano_tablero/2))*2, np.random.randint(0, int(self._tamano_tablero/2))*2 # busca en todos los numeros pares
             self.atacadas[atx, aty] = 1
             if tablero_player1[atx, aty] == 1:
                 self.barcoOrigen[self.barcosNum, 0] = [atx, aty]
                 self.barcoOrigen[self.barcosNum, 1] = [atx, aty]
-                self.mode = 2
+                if self._largo != 1:
+                    self.mode = 2
             return atx, aty
-        
+            
         if self.mode == 2:
             atx, aty = self.barcoOrigen[self.barcosNum, 0]
 
@@ -388,8 +399,13 @@ class Computer: # clase que representa a la IA de la computadora (no me mates ch
                 self.posiblesDirecciones = np.array([[atx, aty+1],
                                                     [atx, aty-1],
                                                     [atx+1, aty],
-                                                    [atx-1, aty]])
+                                                    [atx-1, aty]], dtype=int)
                 deadEnd = True
+
+                for i in range(len(self.posiblesDirecciones)-1, -1, -1):
+                    if self.posiblesDirecciones[i, 0] < 0 or self.posiblesDirecciones[i, 0] >= self._tamano_tablero or self.posiblesDirecciones[i, 1] < 0 or self.posiblesDirecciones[i, 1] >= self._tamano_tablero:
+                        self.posiblesDirecciones = np.delete(self.posiblesDirecciones, i, 0)
+            
                 for i in self.posiblesDirecciones:
                     if check_cell(self.atacadas, i[0], i[1], 0):
                         atx, aty = i
@@ -451,7 +467,7 @@ def single_player_game_loop():
         print(f"{Fore.GREEN}                  _______")
         print(f"               _/       \\_")
         print(f"              / |       | \\    ")
-        print(f"             /  |__   __|  \\   ...")
+        print(f"             /  |__   __|  \\   ")
         print(f"            |__/((o| |o))\\__|   ")
         print(f"            |      | |      |")
         print(f"            |\\     |_|     /|")
