@@ -25,53 +25,57 @@ import time # time es una libreria que viene con un monton de librerias que tien
 
 '''
 
-tamano_tablero = 5 # tamaño del tablero
+tamano_tablero = 4 # tamaño del tablero
 tablero_player1 = np.zeros([tamano_tablero, tamano_tablero]) # creo una array de 10x10 llena solo de ceros
 tablero_player2 = tablero_player1.copy() # copiamos la primera array y la asignamos como el tablero de player 2
 barcos = 0 # variable que va a almacenar la cantidad de barcos que van a haber en el tablero
 frases_malvadas_epicas = [
-    "Prepárate para ser aniquilado por mi poderío naval!",
-    "Tu flota será reducida a polvo bajo mi implacable dominio!",
-    "Te hundiré hasta las profundidades más oscuras del abismo marino!",
-    "La destrucción yace en tu horizonte, como una tormenta imparable!",
-    "Tu derrota, inscrita en los anales de la historia naval, será inminente!",
-    "Seré la encarnación de tu peor pesadilla en los vastos océanos!",
-    "Tu naufragio será la sinfonía de mi triunfo supremo!",
-    "Ninguna embarcación escapará a la furia de mi estrategia sin piedad!",
-    "Mis cañones convertirán tus barcos en cenizas a la deriva!",
-    "El mar se tintará con la sangre de tu derrota, como un oscuro presagio!",
-    "Mis torpedos hallarán su blanco en el corazón mismo de tu armada!",
-    "Cada ola será un lamento por la inevitable pérdida que te espera!",
-    "Tu final se acerca con la solemnidad de un ocaso sin esperanza!",
-    "En el vasto abismo de los océanos, hallarás tu postrer descanso!",
-    "Tu flota, una vez orgullosa, se convertirá en un eco lejano en las profundidades!",
-    "Navegarás hacia tu perdición con la arrogancia de quien ignora su destino!",
-    "Los vientos de la fortuna soplan a mi favor, anunciando tu caída inevitable!",
-    "Mi navío es la guadaña que cortará tus esperanzas con implacable precisión!",
-    "Mis velas se hinchan con la fuerza de mil tormentas, mientras tu destino se sella!",
-    "Prepárate para ser aniquilado por mi poderío naval!",
-    "Tu flota será reducida a polvo bajo mi implacable dominio!",
-    "Te hundiré hasta las profundidades más oscuras del abismo marino!",
-    "La destrucción yace en tu horizonte, como una tormenta imparable!",
-    "Tu derrota, inscrita en los anales de la historia naval, será inminente!",
-    "Seré la encarnación de tu peor pesadilla en los vastos océanos!",
-    "Tu naufragio será la sinfonía de mi triunfo supremo!",
-    "te voy a hundir como el titanic",
-    "Te hare lo mismo que blender a las nets de ORT... \n ¡¡¡¡¡arderas!!!!!!",
-    "Te voy a hacer lo mismo que el 2020 a la humanidad",
-    "Te voy a hacer lo mismo que visual studio le hace a relpit \n te destruire!!!!!!",
-    "Ninguna embarcación escapará a la furia de mi estrategia sin piedad!",
-    "Mis cañones convertirán tus barcos en cenizas a la deriva!",
-    "El mar se tintará con la sangre de tu derrota, como un oscuro presagio!",
-    "Mis torpedos hallarán su blanco en el corazón mismo de tu armada!",
-    "Cada ola será un lamento por la inevitable pérdida que te espera!",
-    "Tu final se acerca con la solemnidad de un ocaso sin esperanza!",
-    "En el vasto abismo de los océanos, hallarás tu postrer descanso!",
-    "Tu flota, una vez orgullosa, se convertirá en un eco lejano en las profundidades!",
-    "Navegarás hacia tu perdición con la arrogancia de quien ignora su destino!",
-    "Los vientos de la fortuna soplan a mi favor, anunciando tu caída inevitable!",
-    "Mi navío es la guadaña que cortará tus esperanzas con implacable precisión!",
-    "Mis velas se hinchan con la fuerza de mil tormentas, mientras tu destino se sella!",
+    f"No sabes con quien te metiste, te voy a hundir como el titanic",
+    f"Con lo que haz hecho, te voy a hacer lo mismo que blender a las nets de ORT... \n ¡¡¡¡¡arderas!!!!!!",
+    f"Ahora si que te destruire!!!!!!",
+    f"Haz firmado tu sentencia de muerte. \n ¡¡¡AHORA MORIRAS!!!",
+    f"Prepárate para ser aniquilado por mi poderío naval!",
+    f"Tu flota será reducida a polvo bajo mi implacable dominio!",
+    f"Te hundiré hasta las profundidades más oscuras del abismo marino!",
+    f"La destrucción yace en tu horizonte, como una tormenta imparable!",
+    f"Tu derrota, inscrita en los anales de la historia naval, será inminente!",
+    f"Seré la encarnación de tu peor pesadilla en los vastos océanos!",
+    f"Tu naufragio será la sinfonía de mi triunfo supremo!",
+    f"Ninguna embarcación escapará a la furia de mi estrategia sin piedad!",
+    f"Mis cañones convertirán tus barcos en cenizas a la deriva!",
+    f"El mar se tintará con la sangre de tu derrota, como un oscuro presagio!",
+    f"Mis torpedos hallarán su blanco en el corazón mismo de tu armada!",
+    f"Cada ola será un lamento por la inevitable pérdida que te espera!",
+    f"Tu final se acerca con la solemnidad de un ocaso sin esperanza!",
+    f"En el vasto abismo de los océanos, hallarás tu postrer descanso!",
+    f"Tu flota, una vez orgullosa, se convertirá en un eco lejano en las profundidades!",
+    f"Navegarás hacia tu perdición con la arrogancia de quien ignora su destino!",
+    f"Los vientos de la fortuna soplan a mi favor, anunciando tu caída inevitable!",
+    f"Mi navío es la guadaña que cortará tus esperanzas con implacable precisión!",
+    f"Mis velas se hinchan con la fuerza de mil tormentas, mientras tu destino se sella!",
+    f"Prepárate para ser aniquilado por mi poderío naval!",
+    f"Tu flota será reducida a polvo bajo mi implacable dominio!",
+    f"Te hundiré hasta las profundidades más oscuras del abismo marino!",
+    f"La destrucción yace en tu horizonte, como una tormenta imparable!",
+    f"Tu derrota, inscrita en los anales de la historia naval, será inminente!",
+    f"Seré la encarnación de tu peor pesadilla en los vastos océanos!",
+    f"Tu naufragio será la sinfonía de mi triunfo supremo!",
+    f"te voy a hundir como el titanic",
+    f"Te hare lo mismo que blender a las nets de ORT... \n ¡¡¡¡¡arderas!!!!!!",
+    f"Te voy a hacer lo mismo que el 2020 a la humanidad",
+    f"Te voy a hacer lo mismo que visual studio le hace a relpit \n te destruire!!!!!!",
+    f"Ninguna embarcación escapará a la furia de mi estrategia sin piedad!",
+    f"Mis cañones convertirán tus barcos en cenizas a la deriva!",
+    f"El mar se tintará con la sangre de tu derrota, como un oscuro presagio!",
+    f"Mis torpedos hallarán su blanco en el corazón mismo de tu armada!",
+    f"Cada ola será un lamento por la inevitable pérdida que te espera!",
+    f"Tu final se acerca con la solemnidad de un ocaso sin esperanza!",
+    f"En el vasto abismo de los océanos, hallarás tu postrer descanso!",
+    f"Tu flota, una vez orgullosa, se convertirá en un eco lejano en las profundidades!",
+    f"Navegarás hacia tu perdición con la arrogancia de quien ignora su destino!",
+    f"Los vientos de la fortuna soplan a mi favor, anunciando tu caída inevitable!",
+    f"Mi navío es la guadaña que cortará tus esperanzas con implacable precisión!",
+    f"Mis velas se hinchan con la fuerza de mil tormentas, mientras tu destino se sella!",
 ]
 
 Fore.WHITE, Back.BLACK # setear el color de las letras y del fondo a defalult
@@ -79,8 +83,10 @@ os.system('cls') # limpia la consola
 
 
 # pide las posiciones de cada celda ocupada y las transforma en una array de np
-def ask_for_position(text: str, pos: int) -> int:
+def ask_for_position(text: str, 
+                     pos: int) -> int:
     '''pide y devuelve un numero entero'''	
+
     ask_flag = True # se crea una variable que va a ser la condicion de un while loop
     while ask_flag: # loop que se repite hasta que se de una respuesta valida
         inp = input(text) # pide la respuesta al usuario
@@ -99,8 +105,13 @@ def ask_for_position(text: str, pos: int) -> int:
 
 
 # definimos una funcion que se va a encargar de asignar valores a una tabla dada en posiciones especificas
-def asaign_values(tabla: np.ndarray, valores: np.ndarray, posiciones: np.ndarray, rotaciones: int, largo: int):
-    '''asigna valores a una tabla en posiciones especificas'''
+def asaign_values(tabla: np.ndarray[np.ndarray[int]], 
+                  valores: np.ndarray[int], 
+                  posiciones: np.ndarray[np.ndarray[int, int]], 
+                  rotaciones: np.ndarray[int], 
+                  largo: int):
+    '''genera los barcos en las posciciones y rotaciones especificadas en la tabla dada'''
+
     for value, enum in zip(valores, range(len(valores))): # unimos los valores pasados y el indice de los valores
         x_off = rotaciones[enum] % 2 # se calcula el offset en x
         y_off = (rotaciones[enum] + 1) % 2 # se calcula el offset en y
@@ -120,6 +131,7 @@ def asaign_values(tabla: np.ndarray, valores: np.ndarray, posiciones: np.ndarray
 
 def get_game_mode() -> bool: # pide el modo de juego
     '''pide el modo de juego y devuelve un booleano que indica si el juego es de dos jugadores o contra la computadora'''
+
     print("Bienvenido a \n",  
         " _           _   _   _           _     _       \n",
         "| |         | | | | | |         | |   (_)      \n",
@@ -127,8 +139,8 @@ def get_game_mode() -> bool: # pide el modo de juego
         "| '_ \ / _` | __| __| |/ _ \/ __| '_ \| | '_ \ \n",
         "| |_) | (_| | |_| |_| |  __/\__ \ | | | | |_) | \n",
         "|_.__/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/ \n", 
-        "                                       | |    \n"
-        "                                       |_|    \n") # mensaje de bienvenida
+        "                                        | |    \n "
+        "                                        |_|    \n") # mensaje de bienvenida
     # menu de seleccion de modo de juego
     print(f"{Fore.WHITE}{Back.BLACK}Modo de juego \n {Fore.GREEN}1{Fore.WHITE}: Jugador vs Jugador \n {Fore.RED}2{Fore.WHITE}: Jugador vs Computadora \n -{Fore.WHITE}{Back.BLACK}") 
     game_mode = input() # pide la respuesta al usuario
@@ -143,8 +155,9 @@ def get_game_mode() -> bool: # pide el modo de juego
         get_game_mode()
 
 
-def get_new_board(single_player: bool): # pide las posiciones de los barcos a los jugadores y los asigna a los tableros
+def get_new_board(single_player: bool) -> None: # pide las posiciones de los barcos a los jugadores y los asigna a los tableros
     '''pide las posiciones de los barcos a los jugadores y los asigna a los tableros'''
+
     global tablero_player1 # se asegura de que la variable este definida dentro de la funcion
     global tablero_player2 # se asegura de que la variable este definida dentro de la funcion
     global barcos # se asegura de que la variable este definida dentro de la funcion
@@ -186,7 +199,9 @@ def get_new_board(single_player: bool): # pide las posiciones de los barcos a lo
         tablero_player2 = tablero.copy()
 
 
-def print_board(tablero):
+def print_board(tablero: np.ndarray[np.ndarray[int]]) -> None:
+    '''imprime el tablero dado en la consola con un formateado a color'''
+
     tablero = tablero.copy() # crea una copia del tablero
     tablero = np.maximum(tablero - 1, np.zeros((tamano_tablero, tamano_tablero))) # remplazamos al 1 por 0 para que no se muestre en el tablero
     for i in enumerate(tablero): # itera por las filas de la tabla
@@ -205,18 +220,25 @@ def print_board(tablero):
         print(line+f"{Back.BLACK}{Fore.WHITE}") # se imprime la linea 
 
 
-def check_if_game_ended(tablero): # checkear si alguno de los jugadores a ganado
+def check_if_game_ended(tablero: np.ndarray[np.ndarray[int]]) -> bool: # checkear si alguno de los jugadores a ganado
+    '''revisa si alguno de los jugadores a ganado el juego y devuelve un booleano que indica si el juego a terminado o no'''
+
     if 1 in tablero: # si sigue habiendo barcos en el tablero
         return False # el juego sige
-    else: # sino
-        return True # el juego a terminado
+    return True # el juego a terminado
 
-def check_cell(list, x, y, value):
-        if list[x, y] == value:
-            return True
-        return False
 
-def two_player_game_loop():
+def check_cell(list: np.ndarray, x: int, y: int, value: int) -> bool:
+    '''revisa si la celda en la posicion x, y de la lista dada es igual al valor dado y devuelve un booleano'''
+
+    if list[x, y] == value:
+        return True
+    return False
+
+
+def two_player_game_loop() -> None:
+    '''uno de los modos de juego en los que dos jugadores se turnan para atacar el tablero del otro jugador, el juego termina cuando uno de los jugadores destruye todos los barcos del otro jugador'''
+
     game_running = True
     while game_running: # loop principal del juego
         # JUGADOR 1
@@ -280,20 +302,24 @@ def two_player_game_loop():
         input("preciona enter cuando el jugador 1 tenga la computadora") # esperar a que se pase la computadora
 
 class Computer: # clase que representa a la IA de la computadora (no me mates chona, ya se que es un if tree)
+    '''clase que representa a la IA de la computadora'''
 
     def __init__(self, barcos: int, largo: int, tamano_tablero: int):
         self.tablero = np.zeros([tamano_tablero, tamano_tablero])
         self.atacadas = np.zeros([tamano_tablero, tamano_tablero])
         self.barcoOrigen = np.zeros([barcos, 2, 2])
         self.barcosDireccion = np.zeros([barcos])
-        self.posiblesDirecciones = np.zeros([4, 2])
+        self.posiblesDirecciones = np.zeros([4, 2], dtype=int)
         self.barcosNum = 0
         self._barcos = barcos
         self._largo = largo
+        self._largoRestante = largo
         self._tamano_tablero = tamano_tablero
         self.mode = 1 # 1 = grid random, 2 = idntify, 3 = destroy
 
-    def atacar(self):
+    def atacar(self) -> tuple[int, int]:
+        '''ataca una celda en el tablero del jugador basandose en la informacion conseguida mediante ataques anteriores'''
+
         if self.mode == 1:
             atx = np.random.randint(0, self._tamano_tablero)
             aty = np.random.randint(0, int(self._tamano_tablero/2))*2 + atx%2
@@ -308,17 +334,48 @@ class Computer: # clase que representa a la IA de la computadora (no me mates ch
         
         if self.mode == 2:
             atx, aty = self.barcoOrigen[self.barcosNum, 0]
+
             self.posiblesDirecciones = np.array([[atx, aty+1],
                                                 [atx, aty-1],
                                                 [atx+1, aty],
                                                 [atx-1, aty]], dtype=int)
-            print(self.posiblesDirecciones)
-            print(self.posiblesDirecciones.shape)
-            print(self.posiblesDirecciones[0])
-            print(self.posiblesDirecciones[3, 0])
+            
+            if self.barcoOrigen[self.barcosNum, 0][0] != self.barcoOrigen[self.barcosNum, 1][0]:
+                if self.barcosDireccion[self.barcosNum] == 0:
+                    self.posiblesDirecciones = np.delete(self.posiblesDirecciones, 1, 0)
+                    self.posiblesDirecciones = np.delete(self.posiblesDirecciones, 0, 0)
+                elif self.barcosDireccion[self.barcosNum] == 1:
+                    self.posiblesDirecciones = np.delete(self.posiblesDirecciones, 3, 0)
+                    self.posiblesDirecciones = np.delete(self.posiblesDirecciones, 2, 0)
+
             for i in range(len(self.posiblesDirecciones)-1, -1, -1):
                 if self.posiblesDirecciones[i, 0] < 0 or self.posiblesDirecciones[i, 0] >= self._tamano_tablero or self.posiblesDirecciones[i, 1] < 0 or self.posiblesDirecciones[i, 1] >= self._tamano_tablero:
                     self.posiblesDirecciones = np.delete(self.posiblesDirecciones, i, 0)
+            
+            # lo de abajo no anda pero bueno :( es solo optimizacion, en algun momento lo voy a arreglar
+            '''for i in self.posiblesDirecciones:
+                if i[0] == self.barcoOrigen[self.barcosNum, 1][0]:
+                    if i[0] < self.barcoOrigen[self.barcosNum, 0][0]:
+                        for o in range(self._largoRestante):
+                            if check_cell(self.atacadas, i[0], i[1]-o, 1):
+                                np.delete(self.posiblesDirecciones, i, 0)
+                                break
+                    else:
+                        for o in range(self._largoRestante):
+                            if check_cell(self.atacadas, i[0], i[1]+o, 1):
+                                np.delete(self.posiblesDirecciones, i, 0)
+                                break
+                elif i[1] == self.barcoOrigen[self.barcosNum, 1][1]:
+                    if i[1] < self.barcoOrigen[self.barcosNum, 0][1]:
+                        for o in range(self._largoRestante):
+                            if check_cell(self.atacadas, i[0]-o, i[1], 1):
+                                np.delete(self.posiblesDirecciones, i, 0)
+                                break
+                    else: 
+                        for o in range(self._largoRestante):
+                            if check_cell(self.atacadas, i[0]+o, i[1], 1):
+                                np.delete(self.posiblesDirecciones, i, 0)
+                                break'''
 
             deadEnd = True
             for i in self.posiblesDirecciones:
@@ -346,6 +403,10 @@ class Computer: # clase que representa a la IA de la computadora (no me mates ch
                     self.barcoOrigen[self.barcosNum, 0] = [atx, aty]
             self.atacadas[atx, aty] = 1
             if tablero_player1[atx, aty] == 1:
+                if atx == self.barcoOrigen[self.barcosNum, 0][0]:
+                    self.barcosDireccion[self.barcosNum] = 0
+                else:
+                    self.barcosDireccion[self.barcosNum] = 1
                 self.barcoOrigen[self.barcosNum, 0] = [atx, aty]
             return atx, aty
         
@@ -380,38 +441,41 @@ def single_player_game_loop():
             print("FIN DEL JUEGO \n A gandado el jugador 1")
             break # termina el juego
 
-        input("preciona enter para que siga la computadora") # esperar al cambio de jugadores
+        time.sleep(1.5) # espera un segundo para que el jugador pueda ver el ataque
         os.system('cls') # limpia la consola
+
         # COMPUTADORA
-        os.system('cls') # limpia la consola
         print("Computadora") # anuncia el turno del jugador 1
         print_board(tablero_player1) # muestra el tablero del jugador 2
         print("Va a atacar")
-        print("                  _______")
-        print("               _/       \\_")
-        print("              / |       | \\    ")
-        print("             /  |__   __|  \\   ...")
-        print("            |__/((o| |o))\\__|   ")
-        print("            |      | |      |")
-        print("            |\\     |_|     /|")
-        print("            | \\           / |")
-        print("             \\| /  ___  \\ |/")
-        print("              \\ | / _ \\ | /")
-        print("               \\_________/")
-        print("                _|_____|_")
-        print("           ____|_________|____")
-        print("          /                   \\")
-        print("         /                     \\")
-        print("        /         battle        \\")
-        print("        |          robot        |\n\n")
-        print("        |   _________________   |")
-        print(frases_malvadas_epicas[np.random.randint(0, len(frases_malvadas_epicas))], "\n \n") # 
+        print(f"{Fore.GREEN}                  _______")
+        print(f"               _/       \\_")
+        print(f"              / |       | \\    ")
+        print(f"             /  |__   __|  \\   ...")
+        print(f"            |__/((o| |o))\\__|   ")
+        print(f"            |      | |      |")
+        print(f"            |\\     |_|     /|")
+        print(f"            | \\           / |")
+        print(f"             \\| /  ___  \\ |/")
+        print(f"              \\ | / _ \\ | /")
+        print(f"               \\_________/")
+        print(f"                _|_____|_")
+        print(f"           ____|_________|____")
+        print(f"          /                   \\")
+        print(f"         /                     \\")
+        print(f"        /         battle        \\")
+        print(f"        |          robot        |")
+        print(f"        |   _________________   |\n\n")
+        inFrase = np.random.randint(3, len(frases_malvadas_epicas)) # selecciona una frase aleatoria normal
+        if tablero_player2[atx, aty] == 3:
+            inFrase = np.random.randint(0, len(frases_malvadas_epicas)) # selecciona una frase aleatoria de HIT
+        print(f"Robot: ", frases_malvadas_epicas[inFrase], f"\n \n{Fore.WHITE}") # imprime la frase elegida
 
         time.sleep(1) # espera un segundo para que el jugador pueda ver el ataque
         # pide las dos pocisiones de ataque
         atx, aty = computer.atacar()
         print(f"Vot a atacar a {atx}, {aty}!!")
-        time.sleep(2) # espera un segundo para que el jugador pueda ver el ataque
+        time.sleep(3) # espera un segundo para que el jugador pueda ver el ataque
         os.system('cls') # limpia la consola
         # si la celda atacada es igual a 1, se muestra HIT, si no se muestra MISS
         if tablero_player1[atx, aty] == 1:
@@ -455,8 +519,8 @@ while jugando: # main loop
         "| '_ \ / _` | __| __| |/ _ \/ __| '_ \| | '_ \ \n",
         "| |_) | (_| | |_| |_| |  __/\__ \ | | | | |_) | \n",
         "|_.__/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/ \n", 
-        "                                       | |    \n "
-        "                                       |_|    \n ") # mensaje de salida
+        "                                        | |    \n "
+        "                                        |_|    \n ") # mensaje de salida
         break
     elif volver_a_jugar == "y":
         pass # volver a jugar
