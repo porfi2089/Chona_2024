@@ -20,7 +20,7 @@ import time # time es una libreria que viene con un monton de librerias que tien
     - La IA es vencible
 
 
-    Juego por: Manuel Rao, Joaquin Blanco, Tobias Esteban Majic.
+    Juego por: Manuel Rao, Tobias Esteban Majic.
 
     GitHub:
     - https://github.com/porfi2089/Chona_2024
